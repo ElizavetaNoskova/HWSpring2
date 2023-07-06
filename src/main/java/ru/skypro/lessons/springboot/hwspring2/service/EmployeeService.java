@@ -1,10 +1,12 @@
 package ru.skypro.lessons.springboot.hwspring2.service;
 
-import ru.skypro.lessons.springboot.homework_spring2.model.Employee;
-import ru.skypro.lessons.springboot.homework_spring2.DTO.EmployeeDTO;
+import ru.skypro.lessons.springboot.hwspring2.model.Employee;
+import ru.skypro.lessons.springboot.hwspring2.DTO.EmployeeDTO;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
+import java.io.IOException;
 
 public interface EmployeeService {
     List<EmployeeDTO> getAllEmployees();
@@ -32,4 +34,5 @@ public interface EmployeeService {
     List<EmployeeDTO> getEmployeeFullInfo(int id);
 
     List<EmployeeDTO> getEmployeesInPageFormat(int page);
+    void saveEmployeeFromJson(MultipartFile file) throws IOException;
 }
