@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>ru.skypro.lessons.springboot</groupId>
-    <artifactId>Homework_Spring2</artifactId>
+    <artifactId>hwspring2</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>Homework_Spring2</name>
-    <description>Homework_Spring2</description>
+    <name>hwspring2</name>
+    <description>hwspring2</description>
     <properties>
         <java.version>17</java.version>
     </properties>
