@@ -17,6 +17,6 @@ public interface ReportRepository extends JpaRepository<Report, Integer> {
             "avg(e.salary)) " +
             "from Employee e join fetch Position p " +
             "where e.position = p " +
-            "group by p.id")
+            "group by p.name")
     public List<ReportDTO> createReport();
 }
