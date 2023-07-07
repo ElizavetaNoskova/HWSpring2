@@ -1,6 +1,7 @@
 package ru.skypro.lessons.springboot.hwspring2.controler;
 
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.PathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;

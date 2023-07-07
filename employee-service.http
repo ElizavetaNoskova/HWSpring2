@@ -1,3 +1,8 @@
+# curl -i http://httpbin.org/ip
+GET http://httpbin.org/ip
+
+###
+
 ### Получение суммы зарплат сотрудников
 GET http://localhost:8080/employee/salary/sum
 
@@ -8,7 +13,76 @@ GET http://localhost:8080/employee/salary/min
 GET http://localhost:8080/employee/salary/max
 
 ### Получение всех сотрудников, зарплата которых больше средней
-GET http://localhost:8080/employee/salary/higherThenAvg
+GET http://localhost:8080/employee/high-salary
+### Создание сотрудников
+POST http://localhost:8080/employee
+Content-Type: application/json
 
-### Получение всех сотрудников
-GET http://localhost:8080/employee/salary/all
+[
+  {
+    "name": "Роман",
+    "salary": 56000
+  },
+  {
+    "name": "Александр",
+    "salary": 80000
+  }
+]
+
+### Обновление сотрудника
+PUT http://localhost:8080/employee/11
+Content-Type: application/json
+
+{
+  "name": "Роман",
+  "salary": 60000
+}
+
+### Получить сотрудника по id
+GET http://localhost:8080/employee/4
+
+### Удалить сотрудника по id
+DELETE http://localhost:8080/employee/4
+
+### Получение сотрудников с зп выше чем
+GET http://localhost:8080/employee//salaryHigherThan?salary=1000
+### Метод возвращения информации о сотруднике с переданным id;
+GET http://localhost:8080/employee/{id}
+
+### Удаление сотрудника с переданным id;
+DELETE http://localhost:8080/employee/45
+
+### Метод возвращения всех сотрудников, зарплата которых выше переданного параметра salary;
+GET http://localhost:8080/employee/salaryHigherThan?salary=20
+
+### Получение сотрудников с самой высокой зарплатой в фирме
+GET http://localhost:8080/employee/withHighestSalary
+
+### Метод принимающий на вход опциональный параметр position и возвращающий информацию о всех сотрудниках фирмы, указанной в параметре должности. Если параметр не указан, то возвращать необходимо всех сотрудников.
+GET http://localhost:8080/employee?position=инженер
+
+### Метод возвращающий полную информацию о сотруднике (имя, зарплата, название должности) с переданным в пути запроса идентификатором.
+### Если указать page, то вернется только 10 записей, если page?page=1 вернет оставшиеся записи, если укажем страницу два то вернется пустой список, потомучто на странице два никого нет, страница ноль это тоже самое что ничего не указано.
+GET http://localhost:8080/employee/page
+
+### Создание репорта
+POST http://localhost:8080/report/
+
+### Получение репорта по ID
+GET http://localhost:8080/report/3
+
+### Получение репорта по ID
+GET http://localhost:8080/report/file/2
+
+
+### Загрузка файла с сотрудниками в БД
+POST http://localhost:8080/employee/upload
+#Authorization: Basic dXNlcjoxMjM0NTY=
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="employees"; filename="employees.json"
+Content-Type: application/json
+
+< ./employees.json
+--WebAppBoundary--

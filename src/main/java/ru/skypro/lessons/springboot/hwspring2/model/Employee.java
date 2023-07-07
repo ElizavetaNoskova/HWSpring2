@@ -57,3 +57,4 @@ public class Employee {
     public void setPositionId(int positionId) {
         this.positionId = positionId;
     }
+}
