@@ -1,16 +1,26 @@
 package ru.skypro.lessons.springboot.hwspring2.service;
 
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import ru.skypro.lessons.springboot.homework_spring2.model.Employee;
-import ru.skypro.lessons.springboot.homework_spring2.DTO.EmployeeDTO;
-import ru.skypro.lessons.springboot.homework_spring2.repository.EmployeeRepository;
+import ru.skypro.lessons.springboot.hwspring2.model.Employee;
+import ru.skypro.lessons.springboot.hwspring2.DTO.EmployeeDTO;
+import ru.skypro.lessons.springboot.hwspring2.repository.EmployeeRepository;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.awt.print.Pageable;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
     private final EmployeeRepository employeeRepository;
@@ -102,4 +112,12 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public void saveEmployeeFromJson(MultipartFile file) throws IOException {
+
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        List<Employee> employees = objectMapper.readValue(file.getBytes(),new TypeReference<>(){});
+        employeeRepository.saveAll(employees);
+    }
 }

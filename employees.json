@@ -1,0 +1,26 @@
+[
+  {
+    "name": "Анастасия",
+    "salary": 120000,
+    "position": {
+      "id": 7,
+      "position": "qa"
+    }
+  },
+  {
+    "name": "Виолетта",
+    "salary": 10000,
+    "position": {
+      "id": 8,
+      "position": "dev"
+    }
+  },
+  {
+    "name": "Станислав",
+    "salary": 100000,
+    "position": {
+      "id": 8,
+      "position": "dev"
+    }
+  }
+]
