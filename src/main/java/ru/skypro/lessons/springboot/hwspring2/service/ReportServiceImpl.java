@@ -41,6 +41,11 @@ public class ReportServiceImpl implements ReportService{
     }
 
     @Override
+    public void upload(File file) throws IOException, ClassNotFoundException {
+
+    }
+
+    @Override
     public Optional<Report> getReportById(int id) {
 
         return reportRepository.findById(id);
