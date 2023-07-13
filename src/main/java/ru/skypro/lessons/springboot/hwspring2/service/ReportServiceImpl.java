@@ -10,6 +10,8 @@ import ru.skypro.lessons.springboot.hwspring2.model.Report;
 import ru.skypro.lessons.springboot.hwspring2.model.ReportPath;
 import ru.skypro.lessons.springboot.hwspring2.repository.ReportPathRepository;
 import ru.skypro.lessons.springboot.hwspring2.repository.ReportRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,6 +24,7 @@ public class ReportServiceImpl implements ReportService{
 
     private final ReportRepository reportRepository;
     private final ReportPathRepository reportPathRepository;
+    Logger logger = LoggerFactory.getLogger(ReportServiceImpl.class);
 
     public ReportServiceImpl(ReportRepository reportRepository, ReportPathRepository reportPathRepository) {
         this.reportRepository = reportRepository;
@@ -30,7 +33,7 @@ public class ReportServiceImpl implements ReportService{
 
     @Override
     public Integer createReport() throws IOException {
-
+        logger.debug("Метод создания Report");
         Report report = new Report();
         report.setData(String.valueOf((reportRepository.createReport())));
 
@@ -42,12 +45,12 @@ public class ReportServiceImpl implements ReportService{
 
     @Override
     public void upload(File file) throws IOException, ClassNotFoundException {
-
+        logger.debug("Метод загрузки сотрудников из файла.");
     }
 
     @Override
     public Optional<Report> getReportById(int id) {
-
+        logger.debug("Метод поиска репорта по id {}", id);
         return reportRepository.findById(id);
     }
 
