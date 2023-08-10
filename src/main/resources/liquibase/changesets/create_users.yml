@@ -1,0 +1,24 @@
+databaseChangeLog:
+  - changeSet:
+      id: 4 # идентификатор набора изменений
+      author: dev # имя разработчика, который добавил набор изменений
+      changes: # список изменений в этом наборе
+        - createTable: # команда liquibase — создает таблицу
+            tableName: users # название таблицы
+            columns:
+              - column:
+                    name: id
+                    type: BIGINT
+                    autoIncrement: true
+                    constraints:
+                      primaryKey: true
+              - column: # колонка
+                  name: username # название колонки
+                  type: varchar(255) # тип
+                  constraints: # ограничения колонки
+                    primaryKey: false
+              - column:
+                  name: password
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
