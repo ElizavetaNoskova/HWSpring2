@@ -35,6 +35,7 @@ public class ReportServiceImpl implements ReportService{
     public Integer createReport() throws IOException {
         logger.debug("Метод создания Report");
         Report report = new Report();
+        report.setId(1);
         report.setData(String.valueOf((reportRepository.createReport())));
 
         reportRepository.save(report);
