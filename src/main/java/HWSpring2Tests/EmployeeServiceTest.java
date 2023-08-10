@@ -9,10 +9,5 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
-import ru.skypro.lessons.springboot.weblibrary1.dto.EmployeeDTO;
-import ru.skypro.lessons.springboot.weblibrary1.pojo.Employee;
-import ru.skypro.lessons.springboot.weblibrary1.pojo.Position;
-import ru.skypro.lessons.springboot.weblibrary1.repository.EmployeeRepository;
-import ru.skypro.lessons.springboot.weblibrary1.service.EmployeeMapper;
-public class EmployeeServiceTest {
+
 }

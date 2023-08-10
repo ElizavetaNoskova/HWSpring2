@@ -20,7 +20,7 @@ import java.nio.file.Paths;
 import java.util.Optional;
 
 @Service
-public class ReportServiceImpl implements ReportService{
+public class ReportServiceImpl implements ReportService {
 
     private final ReportRepository reportRepository;
     private final ReportPathRepository reportPathRepository;
@@ -59,7 +59,7 @@ public class ReportServiceImpl implements ReportService{
     public Integer createReportWithPath() throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         String json = String.valueOf(reportRepository.createReport());
-        objectMapper.writeValue(new File("rep.json"),json);
+        objectMapper.writeValue(new File("rep.json"), json);
         ReportPath reportPath = new ReportPath();
         Path path = Paths.get(("rep.json"));
 
