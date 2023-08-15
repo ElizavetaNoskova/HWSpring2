@@ -23,55 +23,47 @@ import java.nio.file.Paths;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/report")
 public class ReportControler {
-
     private final ReportService reportService;
+    private final EmployeeService employeeService;
 
-    public ReportControler(ReportService reportService) {
+    public ReportControler(ReportService reportService, EmployeeService employeeService) {
         this.reportService = reportService;
+        this.employeeService = employeeService;
     }
 
-    @PostMapping("admin/report")
+    @GetMapping("admin/report")
     public Integer createReport() throws IOException {
         return reportService.createReport();
     }
 
     @PostMapping(value = "admin/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public void uploadFile(@RequestParam("file") MultipartFile multipartFile) throws IOException, ClassNotFoundException {
+    public void uploadFile(@RequestParam("file")MultipartFile multipartFile) throws IOException, ClassNotFoundException {
         File file = new File(multipartFile.getName());
         Files.write(file.toPath(), multipartFile.getBytes());
+
         reportService.upload(file);
     }
-    @GetMapping(value = "/report/{id}")
-    public ResponseEntity<Resource> getReportById(@PathVariable int id) {
+    @GetMapping(value = "/report/{id}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    public ResponseEntity<Resource> downloadFile(@PathVariable int id) throws IOException {
+        String fileName = reportService.getReportById(id).getFile();
+        String json = readTextFromFile(fileName);
 
-        String jsonFile = "report.json";
-        String json = String.valueOf(reportService.getReportById(id));
         Resource resource = new ByteArrayResource(json.getBytes());
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + jsonFile + "\"")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .body(resource);
     }
+    private static String readTextFromFile(String fileName) {
+        try {
 
-        @PostMapping(value = "/reportWithPath")
-    public Integer createReportPath() throws IOException {
-
-        return reportService.createReportWithPath();
+            return Files.lines(Paths.get(fileName), Charset.forName("windows-1251"))
+                    .collect(Collectors.joining());
+        } catch (IOException ioException) {
+            ioException.printStackTrace();
+            return "ошибка";
+        }
     }
 
-    @GetMapping(value = "/reportPath/{id}")
-    public ResponseEntity<Resource> getReportPathById(@PathVariable int id) throws FileNotFoundException {
-
-        String fileReport = "report.json";
-        String pathToReport = reportService.getReportPathById(id).get().getPath();
-        File file = new File(pathToReport);
-        Resource resource = new PathResource(file.getPath());
-
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileReport + "\"")
-                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                .body(resource);
-    }
 }

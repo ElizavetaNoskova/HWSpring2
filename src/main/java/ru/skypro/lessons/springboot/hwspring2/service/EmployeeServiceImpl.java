@@ -1,136 +1,172 @@
 package ru.skypro.lessons.springboot.hwspring2.service;
-
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.stereotype.Service;
-import ru.skypro.lessons.springboot.hwspring2.model.Employee;
-import ru.skypro.lessons.springboot.hwspring2.DTO.EmployeeDTO;
-import ru.skypro.lessons.springboot.hwspring2.repository.EmployeeRepository;
-import org.springframework.web.multipart.MultipartFile;
+import jakarta.annotation.Nullable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.awt.print.Pageable;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Service;
+
+import ru.skypro.lessons.springboot.hwspring2.DTO.EmployeeDTO;
+
+import ru.skypro.lessons.springboot.hwspring2.model.Employee;
+import ru.skypro.lessons.springboot.hwspring2.repository.EmployeeRepository;
+
+
+import java.util.*;
+
+
 import java.util.stream.Collectors;
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
     private final EmployeeRepository employeeRepository;
+    private final EmployeeMapper employeeMapper;
     Logger logger = LoggerFactory.getLogger(EmployeeServiceImpl.class);
-    public EmployeeServiceImpl(EmployeeRepository employeeRepository) {
+
+
+    public EmployeeServiceImpl(EmployeeRepository employeeRepository, EmployeeMapper employeeMapper) {
         this.employeeRepository = employeeRepository;
+        this.employeeMapper = employeeMapper;
     }
 
     @Override
-    public List<EmployeeDTO> getAllEmployees() {
-        return employeeRepository.getAllEmployees().stream().
-                map(EmployeeDTO::fromEmployee)
+    public List<EmployeeDTO> getAllNew() {
+        return employeeRepository.findAll()
+                .stream()
+                .map(employeeMapper::toDto)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public Integer getSalarySum() {
+    public double salarySum() {
         logger.debug("Метод подсчёта суммы зарплат сотрудников.");
-        return employeeRepository.getSalarySum();
+        return employeeRepository.salarySum();
     }
 
     @Override
-    public Optional<Integer> getMinSalary() {
+    public EmployeeDTO minSalary() {
         logger.debug("Метод поиска минимальной зарплаты среди сотрудников.");
-        return employeeRepository.getMinSalary();
+        return employeeRepository.minSalary()
+                .orElse(null);
     }
 
     @Override
-    public Optional<Integer> getMaxSalary() {
+    public EmployeeDTO maxSalary() {
         logger.debug("Метод поиска максимальной зарплаты среди сотрудников.");
-        return employeeRepository.getMaxSalary();
+        return employeeRepository.maxSalary().stream()
+                .max(Comparator.comparing(EmployeeDTO::getSalary)).get();
     }
 
     @Override
-    public List<EmployeeDTO> getAllEmployeesWithSalaryHigherThenAvg() {
+    public Integer employeeHighSalary() {
         logger.debug("Метод поиска средней зарплаты среди сотрудников.");
-        return employeeRepository.getAllEmployeesWithSalaryHigherThenAvg().stream()
-                .map(EmployeeDTO::fromEmployee)
-                .collect(Collectors.toList());
+        return employeeRepository.employeeHighSalary();
     }
 
     @Override
-    public void addEmployee(Employee employee) {
+    public List<EmployeeDTO> addEmployee(List<EmployeeDTO> employeeDTOS) {
         logger.debug("Метод добавления сотрудников.");
-        employeeRepository.save(employee);
+        Optional<EmployeeDTO> emploees = employeeDTOS.stream()
+                .filter(employeeDTO -> employeeDTO.getSalary() <= 0 || employeeDTO.getName() == null
+                        || employeeDTO.getName().isEmpty())
+                .findFirst();
+        if (emploees.isPresent()) {
+            throw new RuntimeException();
+        }
+        return employeeRepository.saveAll(
+                        employeeDTOS.stream()
+                                .map(employeeMapper::toEntity)
+                                .collect(Collectors.toList())
+                )
+                .stream()
+                .map(employeeMapper::toDto)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public void updateEmployee(Employee employee) {
-        employeeRepository.save(employee);
+    public void update(int id, EmployeeDTO employeeDTO) {
+        logger.debug("Метод обновления сотрудника с {} id", id);
+        Employee oldEmployee = employeeRepository.findById(id)
+                .orElseThrow(()->{
+                    logger.error("сотрудник не найден. id =" + id);
+                    return new RuntimeException();
+                });
+        oldEmployee.setName(employeeDTO.getName());
+        oldEmployee.setSalary(employeeDTO.getSalary());
+        employeeRepository.save(oldEmployee);
     }
 
-    public List<EmployeeDTO> getEmployeeById(Integer id) {
+    @Override
+    public EmployeeDTO getEmployeeById(int id) {
         logger.debug("Метод поиска сотрудника с {} id", id);
-        List<EmployeeDTO>
-                optionalEmployeeDTO =
-                employeeRepository.findById(id).stream()
-                        .map(EmployeeDTO::fromEmployee)
-                        .collect(Collectors.toList());
+        return employeeRepository.findById(id)
+                .map(employeeMapper::toDto)
+                .map(employeeDTO -> {
+                    employeeDTO.setPosition(null);
+                    return employeeDTO;
+                })
+                .orElseThrow(()->{
+                    logger.error("сотрудник не найден. id =" + id);
+                    return new RuntimeException();
+                });
 
-        return optionalEmployeeDTO;
     }
 
     @Override
-    public void deleteEmployeeById(Integer id) {
+    public void deleteEmployee(int id) {
         logger.debug("Метод удаления сотрудника с {} id", id);
-        employeeRepository.deleteById(id);
+        Employee employee = employeeRepository.findById(id)
+                .orElseThrow(()->{
+                    logger.error("сотрудник не найден. id =" + id);
+                    return new RuntimeException();
+                });
+        employeeRepository.delete(employee);
     }
 
     @Override
-    public List<EmployeeDTO> getAllEmployeesWithSalaryHigherThan(int salary) {
-        logger.debug("Метод сортировки сотрудников с зарплатой выше {}", salary);
-        return employeeRepository.getAllEmployeesWithSalaryHigherThan(salary).stream()
-                .map(EmployeeDTO::fromEmployee)
+    public List<EmployeeDTO> salaryHigherThan(Integer than) {
+        logger.debug("Метод сортировки сотрудников с зарплатой выше {}", than);
+        return employeeRepository.findEmployeeBySalaryIsGreaterThan(than)
+                .stream()
+                .map(employeeMapper::toDto)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<EmployeeDTO> getAllEmployeesWithMatchingPosition(String position) {
+    public List<EmployeeDTO> withHighestSalary() {
+        logger.debug("Метод поиска сотрудников с самыми высокими зарплатами.");
+        return employeeRepository.maxSalary();
+    }
+
+    @Override
+    public List<EmployeeDTO> getEmployee(@Nullable String position) {
         logger.debug("Метод поиска сотрудников на позиции {}", position);
-        return employeeRepository.getAllEmployeesWithMatchingPosition(position).stream()
-                .map(EmployeeDTO::fromEmployee)
+        return Optional.ofNullable(position)
+                .map(employeeRepository::findEmployeeByPosition_Position)
+                .orElseGet(employeeRepository::findAll)
+                .stream()
+                .map(employeeMapper::toDto)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<EmployeeDTO> getEmployeeFullInfo(int id) {
+    public EmployeeDTO getEmployeeFullInfo(int id) {
         logger.debug("Метод получения полной информации о сотруднике по id {}", id);
-        return employeeRepository.findById(id).stream()
-                .map(EmployeeDTO::fromEmployee)
-                .collect(Collectors.toList());
+        return employeeRepository.findById(id)
+                .map(employeeMapper::toDto)
+                .orElseThrow(()->{
+                    logger.error("сотрудник не найден. id =" + id);
+                    return new RuntimeException();
+                });
 
     }
 
     @Override
-    public List<EmployeeDTO> getEmployeesInPageFormat(int page) {
+    public List<EmployeeDTO> getEmployeesFromPage(int page) {
         logger.debug("Метод получения cписка сотрудников на странице {}", page);
-        return employeeRepository.findAll(PageRequest.of(page, 10)).stream()
-                .map(EmployeeDTO::fromEmployee)
+        return employeeRepository.findAll(PageRequest.of(page, 10))
+                .stream()
+                .map(employeeMapper::toDto)
                 .collect(Collectors.toList());
-    }
 
-    @Override
-    public void saveEmployeeFromJson(MultipartFile file) throws IOException {
-
-        ObjectMapper objectMapper = new ObjectMapper();
-
-        List<Employee> employees = objectMapper.readValue(file.getBytes(),new TypeReference<>(){});
-        employeeRepository.saveAll(employees);
     }
 }

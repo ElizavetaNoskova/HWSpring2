@@ -4,20 +4,18 @@ import jakarta.persistence.*;
 
 import java.util.Objects;
 import java.util.Set;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 
 @Entity
-@Table(name = "position")
 public class Position {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     private Integer id;
-    @Column(name = "name")
-    private String name;
-
-    public Position() {
-    }
-
+    private String position;
 
     public Integer getId() {
         return id;
@@ -27,11 +25,11 @@ public class Position {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getPosition() {
+        return position;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setPosition(String position) {
+        this.position = position;
     }
 }
