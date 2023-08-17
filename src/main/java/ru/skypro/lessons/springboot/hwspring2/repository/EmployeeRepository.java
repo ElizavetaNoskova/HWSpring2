@@ -5,42 +5,25 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import ru.skypro.lessons.springboot.hwspring2.model.Employee;
+import ru.skypro.lessons.springboot.hwspring2.DTO.EmployeeDTO;
 
 import java.util.List;
 import java.util.Optional;
 
+
+
+
 public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
+    @Query("SELECT SUM(e.salary) from  Employee e")
+    double salarySum();
+    @Query("SELECT AVG(e.salary) from  Employee e")
+    int employeeHighSalary();
 
-    @Query(value = "SELECT * FROM employee",
-            nativeQuery = true)
-    List<Employee> getAllEmployees();
+    @Query("SELECT new ru.skypro.lessons.springboot.weblibrary1.dto.EmployeeDTO(e.id, e.name, e.salary, p.position) FROM Employee  e left join Position p on p.id = e.position.id where  e.salary = (SELECT MIN(e.salary) from  Employee e)")
+    Optional<EmployeeDTO> minSalary();
+    @Query("SELECT new ru.skypro.lessons.springboot.weblibrary1.dto.EmployeeDTO(e.id, e.name, e.salary, p.position) FROM Employee  e left join Position p on p.id = e.position.id where e.salary = (SELECT MAX(e.salary) from  Employee e)")
+    List<EmployeeDTO> maxSalary();
 
-    @Query(value = "SELECT SUM(salary) " +
-            "FROM employee",
-            nativeQuery = true)
-    Integer getSalarySum();
-
-    @Query(value = "SELECT MIN(salary) " +
-            "FROM employee", nativeQuery = true)
-    Optional<Integer> getMinSalary();
-
-    @Query(value = "SELECT MAX(salary) " +
-            "FROM employee", nativeQuery = true)
-    Optional<Integer> getMaxSalary();
-
-    @Query(value = "SELECT * FROM employee " +
-            "WHERE salary >(SELECT AVG (salary) FROM employee)",
-            nativeQuery = true)
-    List<Employee> getAllEmployeesWithSalaryHigherThenAvg();
-
-    @Query(value = "SELECT * FROM employee " +
-            "WHERE salary > :salary",
-            nativeQuery = true)
-    List<Employee> getAllEmployeesWithSalaryHigherThan(@Param("salary") int salary);
-
-    @Query(value = "SELECT employee.id, employee.name, employee.salary, employee.position_id FROM employee " +
-            "INNER JOIN position " +
-            "ON employee.position_id = position.id and position.name = :name",
-            nativeQuery = true)
-    List<Employee> getAllEmployeesWithMatchingPosition(@Param("name") String name);
+    List<Employee> findEmployeeBySalaryIsGreaterThan(Integer salary);
+    List<Employee> findEmployeeByPosition_Position(String position);
 }

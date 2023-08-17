@@ -1,70 +1,27 @@
 package ru.skypro.lessons.springboot.hwspring2.DTO;
 
-import ru.skypro.lessons.springboot.hwspring2.model.ReportPath;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.*;
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor
 
+@JsonInclude(JsonInclude.Include.NON_ABSENT)
 public class ReportDTO {
-    private String positionName;
-    private Long count;
-    private int minSalary;
-    private int maxSalary;
-    private double avgSalary;
 
-    public ReportDTO(String positionName, Long count, int minSalary, int maxSalary, double avgSalary) {
-        this.positionName = positionName;
-        this.count = count;
-        this.minSalary = minSalary;
-        this.maxSalary = maxSalary;
-        this.avgSalary = avgSalary;
+    private Integer position;
+    private Long countEmployees;
+    private Integer maxSalary;
+    private Integer minSalary;
+    private Double avgSalary;
+
+    public ReportDTO(Integer pos, Long count, Integer max, Integer min, Double avg) {
+        this.position = pos;
+        this.countEmployees = count;
+        this.maxSalary = max;
+        this.minSalary = min;
+        this.avgSalary = avg;
     }
 
-    public String getPositionName() {
-        return positionName;
-    }
-
-    public void setPositionName(String positionName) {
-        this.positionName = positionName;
-    }
-
-    public Long getCount() {
-        return count;
-    }
-
-    public void setCount(Long count) {
-        this.count = count;
-    }
-
-    public int getMinSalary() {
-        return minSalary;
-    }
-
-    public void setMinSalary(int minSalary) {
-        this.minSalary = minSalary;
-    }
-
-    public int getMaxSalary() {
-        return maxSalary;
-    }
-
-    public void setMaxSalary(int maxSalary) {
-        this.maxSalary = maxSalary;
-    }
-
-    public double getAvgSalary() {
-        return avgSalary;
-    }
-
-    public void setAvgSalary(double avgSalary) {
-        this.avgSalary = avgSalary;
-    }
-
-    @Override
-    public String toString() {
-        return "{" +
-                "pName='" + positionName + '\'' +
-                ", count=" + count +
-                ", minSalary=" + minSalary +
-                ", maxSalary=" + maxSalary +
-                ", avgSalary=" + avgSalary +
-                '}';
-    }
 }
