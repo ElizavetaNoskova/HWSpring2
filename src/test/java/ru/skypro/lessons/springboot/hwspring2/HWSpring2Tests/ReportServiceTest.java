@@ -66,5 +66,4 @@ public class ReportServiceTest {
         assertEquals(report.getId(), actual.getId());
         assertEquals(report.getId(), actual1);
     }
-
 }

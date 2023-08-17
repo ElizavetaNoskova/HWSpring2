@@ -185,8 +185,6 @@ public class EmployeeServiceTest {
         employeeService.deleteEmployee(id);
 
         verify(repositoryMock, times(1)).delete(employee);
-
-
     }
 
     @Test
@@ -250,7 +248,9 @@ public class EmployeeServiceTest {
         List<Employee> actual = repositoryMock.findAll().stream().limit(page).toList();
         assertEquals(actual.size(), page);
 
-    }    @Test
+    }
+
+    @Test
     public void ShouldAddEmployeeFromFileToDB() throws IOException {
         List<EmployeeDTO> employeeDTOExpected = List.of(new EmployeeDTO(3, "Irina", 150000, "Analyst"));
 
@@ -265,7 +265,6 @@ public class EmployeeServiceTest {
     }
 
 
-
     private static List<EmployeeDTO> getIterable(int id,
                                                  String inputName,
                                                  int inputSalary) {
@@ -273,6 +272,7 @@ public class EmployeeServiceTest {
         return List.of(new EmployeeDTO(id, inputName, inputSalary, "òåñòåð")
         );
     }
+
     private static String readTextFromFile(String fileName) {
         try {
 
