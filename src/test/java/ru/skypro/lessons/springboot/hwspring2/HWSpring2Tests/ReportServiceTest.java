@@ -1,4 +1,4 @@
-package HWSpring2Tests;
+package ru.skypro.lessons.springboot.hwspring2.HWSpring2Tests;
 
 
 import org.junit.jupiter.api.Test;
