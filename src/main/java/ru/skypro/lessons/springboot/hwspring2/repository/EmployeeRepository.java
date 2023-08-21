@@ -19,9 +19,9 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
     @Query("SELECT AVG(e.salary) from  Employee e")
     int employeeHighSalary();
 
-    @Query("SELECT new ru.skypro.lessons.springboot.weblibrary1.dto.EmployeeDTO(e.id, e.name, e.salary, p.position) FROM Employee  e left join Position p on p.id = e.position.id where  e.salary = (SELECT MIN(e.salary) from  Employee e)")
+    @Query("SELECT new ru.skypro.lessons.springboot.hwspring2.DTO.EmployeeDTO(e.id, e.name, e.salary, p.position) FROM Employee  e left join Position p on p.id = e.position.id where  e.salary = (SELECT MIN(e.salary) from  Employee e)")
     Optional<EmployeeDTO> minSalary();
-    @Query("SELECT new ru.skypro.lessons.springboot.weblibrary1.dto.EmployeeDTO(e.id, e.name, e.salary, p.position) FROM Employee  e left join Position p on p.id = e.position.id where e.salary = (SELECT MAX(e.salary) from  Employee e)")
+    @Query("SELECT new ru.skypro.lessons.springboot.hwspring2.DTO.EmployeeDTO(e.id, e.name, e.salary, p.position) FROM Employee  e left join Position p on p.id = e.position.id where e.salary = (SELECT MAX(e.salary) from  Employee e)")
     List<EmployeeDTO> maxSalary();
 
     List<Employee> findEmployeeBySalaryIsGreaterThan(Integer salary);
