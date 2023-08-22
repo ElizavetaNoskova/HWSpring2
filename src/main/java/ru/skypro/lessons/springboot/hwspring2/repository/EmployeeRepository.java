@@ -10,9 +10,6 @@ import ru.skypro.lessons.springboot.hwspring2.DTO.EmployeeDTO;
 import java.util.List;
 import java.util.Optional;
 
-
-
-
 public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
     @Query("SELECT SUM(e.salary) from  Employee e")
     double salarySum();
