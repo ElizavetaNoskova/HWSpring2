@@ -4,19 +4,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import ru.skypro.lessons.springboot.hwspring2.DTO.ReportDTO;
 import ru.skypro.lessons.springboot.hwspring2.model.Report;
-
+import ru.skypro.lessons.springboot.hwspring2.DTO.EmployeeDTO;
+import ru.skypro.lessons.springboot.hwspring2.model.Employee;
 import java.util.List;
+import java.util.Optional;
+
 
 public interface ReportRepository extends JpaRepository<Report, Integer> {
-
-    @Query(value = "SELECT new ru.skypro.lessons.springboot.hwspring2.DTO.ReportDTO( " +
-            "p.name, " +
-            "count(e.id), " +
-            "min(e.salary), " +
-            "max(e.salary), " +
-            "avg(e.salary)) " +
-            "from Employee e join fetch Position p " +
-            "where e.position = p " +
-            "group by p.name")
-    public List<ReportDTO> createReport();
+    @Query("SELECT new ru.skypro.lessons.springboot.hwspring2.DTO.ReportDTO(p.id, count(e.id), max(e.salary), min(e.salary), avg(e.salary)) FROM Employee e left join Position p on p.id = e.position.id GROUP BY p.id")
+    List<ReportDTO> createReport();
 }

@@ -1,77 +1,96 @@
 package ru.skypro.lessons.springboot.hwspring2.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.Resource;
-import org.springframework.stereotype.Service;
-import ru.skypro.lessons.springboot.hwspring2.DTO.ReportDTO;
-import ru.skypro.lessons.springboot.hwspring2.DTO.ReportPathDTO;
-import ru.skypro.lessons.springboot.hwspring2.model.Report;
-import ru.skypro.lessons.springboot.hwspring2.model.ReportPath;
-import ru.skypro.lessons.springboot.hwspring2.repository.ReportPathRepository;
-import ru.skypro.lessons.springboot.hwspring2.repository.ReportRepository;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import ru.skypro.lessons.springboot.hwspring2.DTO.EmployeeDTO;
 
-import java.io.File;
-import java.io.IOException;
+import ru.skypro.lessons.springboot.hwspring2.model.Report;
+import ru.skypro.lessons.springboot.hwspring2.repository.EmployeeRepository;
+import ru.skypro.lessons.springboot.hwspring2.repository.ReportRepository;
+
+import java.io.*;
+
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Optional;
+
+import java.util.List;
+
+import java.util.stream.Collectors;
 
 @Service
-public class ReportServiceImpl implements ReportService{
-
+public class ReportServiceImpl implements ReportService {
     private final ReportRepository reportRepository;
-    private final ReportPathRepository reportPathRepository;
+    private final EmployeeRepository employeeRepository;
+    private final EmployeeService employeeService;
+    private final EmployeeMapper employeeMapper;
     Logger logger = LoggerFactory.getLogger(ReportServiceImpl.class);
 
-    public ReportServiceImpl(ReportRepository reportRepository, ReportPathRepository reportPathRepository) {
+    public ReportServiceImpl(ReportRepository reportRepository, EmployeeRepository employeeRepository, EmployeeService employeeService, EmployeeMapper employeeMapper) {
         this.reportRepository = reportRepository;
-        this.reportPathRepository = reportPathRepository;
+        this.employeeRepository = employeeRepository;
+        this.employeeService = employeeService;
+        this.employeeMapper = employeeMapper;
     }
 
     @Override
     public Integer createReport() throws IOException {
         logger.debug("Метод создания Report");
+        ObjectMapper objectMapper = new ObjectMapper();
+        File file = new File("Report.json");
         Report report = new Report();
-        report.setData(String.valueOf((reportRepository.createReport())));
+        report.setId(1);
+        String json = objectMapper.writeValueAsString(reportRepository.createReport());
+        Files.writeString(Paths.get(file.getName()), json);
 
+        report.setFile(file.getPath());
         reportRepository.save(report);
-
+        report.setFile(report.getId() + file.getPath());
         return report.getId();
 
+
     }
 
+
     @Override
-    public void upload(File file) throws IOException, ClassNotFoundException {
+    public void upload(File file) throws IOException {
         logger.debug("Метод загрузки сотрудников из файла.");
-    }
-
-    @Override
-    public Optional<Report> getReportById(int id) {
-        logger.debug("Метод поиска репорта по id {}", id);
-        return reportRepository.findById(id);
-    }
-
-    @Override
-    public Integer createReportWithPath() throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
-        String json = String.valueOf(reportRepository.createReport());
-        objectMapper.writeValue(new File("rep.json"),json);
-        ReportPath reportPath = new ReportPath();
-        Path path = Paths.get(("rep.json"));
+        List<EmployeeDTO> employeeDTOS = objectMapper.readValue(file, new TypeReference<>() {
+        });
+        employeeService.addEmployee(employeeDTOS);
 
-//        String json = String.valueOf(reportRepository.createReport());
-        Resource resource = new ByteArrayResource(json.getBytes());
-        reportPath.setFilePath(String.valueOf(path.toAbsolutePath()));
-        reportPathRepository.save(reportPath);
-        return reportPath.getId();
     }
 
     @Override
-    public Optional<ReportPathDTO> getReportPathById(int id) {
+    public Report getReportById(int id) {
+        logger.debug("Метод поиска репорта по id {}", id);
+        return reportRepository.findById(id)
+                .orElseThrow();
+    }
 
-        return Optional.of(ReportPathDTO.fromReportPath(reportPathRepository.getReferenceById(id)));
+    private static String readTextFromFile(String fileName) {
+        Path path = Paths.get(fileName);
+        try {
+            return Files.lines(path)
+                    .collect(Collectors.joining());
+        } catch (IOException ioException) {
+            ioException.printStackTrace();
+            return "";
+        }
+    }
+
+    private static void writeTextToFile(String text, String fileName) {
+        Path path = Paths.get(fileName);
+        try {
+            Files.write(path, text.getBytes(StandardCharsets.UTF_8));
+        } catch (IOException ioException) {
+            ioException.printStackTrace();
+        }
     }
 }

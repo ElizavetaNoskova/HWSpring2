@@ -13,7 +13,7 @@ databaseChangeLog:
                   constraints: # ограничения колонки
                     primaryKey: true
               - column:
-                  name: name
+                  name: position
                   type: varchar(255)
                   constraints:
                     nullable: false

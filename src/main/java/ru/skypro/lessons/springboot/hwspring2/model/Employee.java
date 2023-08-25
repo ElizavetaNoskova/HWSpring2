@@ -1,60 +1,53 @@
 package ru.skypro.lessons.springboot.hwspring2.model;
 
 import jakarta.persistence.*;
+import java.util.Objects;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 
 @Entity
 @Table(name = "employee")
+@Setter
+@Getter
+@Accessors(chain = true)
 public class Employee {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     private Integer id;
-    @Column(name = "name")
-    private String name;
-    @Column(name = "salary")
-    private int salary;
-    @Column(name = "position_id", insertable = false, updatable = false)
-    private int positionId;
-    @ManyToOne()
-    @JoinColumn(name = "position_id")
+
+    private  String name;
+    private  int salary;
+    @ManyToOne
     private Position position;
-
-    public Employee() {
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public int getSalary() {
-        return salary;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setSalary(int salary) {
-        this.salary = salary;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
 
     public Position getPosition() {
         return position;
     }
 
-    public int getPositionId() {
-        return positionId;
+    public void setPosition(Position position) {
+        this.position = position;
     }
 
-    public void setPositionId(int positionId) {
-        this.positionId = positionId;
+    public Employee(String name, int salary) {
+        this.name = name;
+        this.salary = salary;
+
+    }
+    public Employee() {
+
+    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Employee employee1 = (Employee) o;
+        return salary == employee1.salary && Objects.equals(id, employee1.id) && Objects.equals(name, employee1.name) && Objects.equals(position, employee1.position);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, salary, position);
     }
 }
